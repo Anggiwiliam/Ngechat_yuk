@@ -1,7 +1,9 @@
 import React from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image,ToastAndroid } from "react-native";
 import Icon from 'react-native-vector-icons/AntDesign'
 import * as firebase from "firebase";
+import AsyncStorage from '@react-native-community/async-storage';
+import {Database, Auth} from '../Config/Firebase';
 
 export default class LoginScreen extends React.Component {
     state = {
@@ -13,11 +15,43 @@ export default class LoginScreen extends React.Component {
     handleLogin = () => {
         const { email, password } = this.state;
 
-        firebase
-            .auth()
-            .signInWithEmailAndPassword(email, password)
-            .catch(error => this.setState({ errorMessage: error.message }));
-    };
+        Database.ref('user/')
+        .orderByChild('/email')
+        .equalTo(email)
+        .once('value', result => {
+          let data = result.val();
+          if (data !== null) {
+            let user = Object.values(data);
+
+            AsyncStorage.setItem('user.email', user[0].email);
+            AsyncStorage.setItem('user.name', user[0].name);
+            AsyncStorage.setItem('user.photo', user[0].photo);
+          }
+        });
+      Auth.signInWithEmailAndPassword(email, password)
+        .then(async response => {
+          Database.ref('/user/' + response.user.uid).update({
+            status: 'Online',
+            latitude: this.state.latitude || null,
+            longitude: this.state.longitude || null,
+          });
+          // AsyncStorage.setItem('user', response.user);
+          await AsyncStorage.setItem('userid', response.user.uid);
+          await AsyncStorage.setItem('user', response.user);
+          ToastAndroid.show('Login success', ToastAndroid.LONG);
+          await this.props.navigation.navigate('App');
+        })
+        .catch(error => {
+          this.setState({
+            errorMessage: error.message,
+            email: '',
+            password: '',
+          });
+          ToastAndroid.show(this.state.errorMessage, ToastAndroid.LONG);
+        });
+      // Alert.alert('Error Message', this.state.errorMessage);
+    
+  };
 
     render() {
         return (

@@ -32,18 +32,18 @@ const HomeNavigation = createStackNavigator({
     }, 
   },
 
-  Contact: { 
-    screen: Contact,
-    navigationOptions: {
-      headerStyle: {
-        backgroundColor: '#ef4339',
-      },
-      title: 'Contact',
-      // header: null,
-      // headerLeft: <Image source={require('../Assets/images/logo/header/ic_header.png')} style={{marginLeft:15, aspectRatio: 2, resizeMode: 'contain'}} />,
-    }, 
-  },
-  Chat: { 
+  // Contact: { 
+  //   screen: Contact,
+  //   navigationOptions: {
+  //     headerStyle: {
+  //       backgroundColor: '#ef4339',
+  //     },
+  //     title: 'Contact',
+  //     // header: null,
+  //     // headerLeft: <Image source={require('../Assets/images/logo/header/ic_header.png')} style={{marginLeft:15, aspectRatio: 2, resizeMode: 'contain'}} />,
+  //   }, 
+  // },
+  Chating: { 
     screen: Chat,
     navigationOptions: {
       headerStyle: {

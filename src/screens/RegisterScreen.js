@@ -1,25 +1,65 @@
 import React from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ToastAndroid } from "react-native";
 import * as firebase from "firebase";
+import {Database, Auth} from '../Config/Firebase';
 
 export default class RegisterScreen extends React.Component {
-    state = {
-        name: "",
-        email: "",
-        password: "",
-        errorMessage: null
-    };
-
+    constructor(props) {
+        super(props);
+        this.state = {
+          isVisible: false,
+          name: '',
+          email: '',
+          password: '',
+          latitude: null,
+          longitude: null,
+          errorMessage: null,
+          loading: false,
+          updatesEnabled: false,
+        };
+    }
     handleSignUp = () => {
-        firebase
-            .auth()
-            .createUserWithEmailAndPassword(this.state.email, this.state.password)
-            .then(userCredentials => {
-                return userCredentials.user.updateProfile({
-                    displayName: this.state.name
-                });
+        const {email, name, password} = this.state;
+        Auth.createUserWithEmailAndPassword(email, password)
+        .then(response => {
+          console.warn(response);
+          Database.ref('/user/' + response.user.uid)
+            .set({
+              name: this.state.name,
+              status: 'Offline',
+              email: this.state.email,
+              photo: 'https://img.pugam.com/2018/02/avatar1.png',
+              latitude: this.state.latitude,
+              longitude: this.state.longitude,
+              id: response.user.uid,
             })
-            .catch(error => this.setState({ errorMessage: error.message }));
+            .catch(error => {
+              ToastAndroid.show(error.message, ToastAndroid.LONG);
+              this.setState({
+                name: '',
+                email: '',
+                password: '',
+              });
+            });
+          ToastAndroid.show(
+            'Your account is successfully registered!',
+            ToastAndroid.LONG,
+          );
+
+          this.props.navigation.navigate('Login');
+        })
+        .catch(error => {
+          this.setState({
+            errorMessage: error.message,
+            name: '',
+            email: '',
+            password: '',
+          });
+          ToastAndroid.show(this.state.errorMessage.message, ToastAndroid.LONG);
+        });
+      // Alert.alert('Error Message', this.state.errorMessage);
+    
+    
     };
 
     render() {
@@ -76,7 +116,8 @@ export default class RegisterScreen extends React.Component {
                     <Text style={{ color: "#FFF", fontWeight: "500" }}>Sign up</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }}>
+                <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }}
+                onPress={() => this.props.navigation.navigate("Login")}>
                     <Text style={{ color: "#414959", fontSize: 13 }}>
                     <Text style={{ fontWeight: "500", color: "#18A4E0" }}>Login</Text>
                     </Text>

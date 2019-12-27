@@ -15,8 +15,8 @@ export default class LoadingScreen extends React.Component {
                 <Image
                   source={require('../../assets/chat2.png')}
                   style={{
-                    width: 50,
-                    height:50,
+                    width: 150,
+                    height:150,
                   }}
                 />
                 <ActivityIndicator ></ActivityIndicator>

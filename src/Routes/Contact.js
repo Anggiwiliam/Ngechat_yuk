@@ -8,9 +8,9 @@ const Kontak = createStackNavigator({
   Home: {
     screen: Contact,
     navigationOptions: {
-      // title: "My Account",
-      // headerTintColor: '#ffffff',
-    //   headerLeft: <Image source={require('../Assets/images/logo/header/ic_header.png')} style={{marginLeft:15, aspectRatio: 2, resizeMode: 'contain'}} />,
+      title: "Contact",
+      headerTintColor: '#ffffff',
+      headerLeft: <Image source={require('../../assets/chat2.png')} style={{marginLeft:15,width:50, height:50}} />,
       headerStyle: {
         backgroundColor: '#18A4E0',
       },

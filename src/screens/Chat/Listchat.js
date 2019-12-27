@@ -15,7 +15,7 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import {Database} from '../../Config/Firebase';
 
-export default class Contact extends Component {
+export default class ListChat extends Component {
   constructor(props) {
     super(props);
   }
@@ -45,7 +45,7 @@ export default class Contact extends Component {
     return (
       <SafeAreaView style={{flex: 1}}>
         <TouchableOpacity
-           onLongPress={() => {this.props.navigation.navigate('Profila', {item})}}
+          onPress={() => {this.props.navigation.navigate('Chatting', {item})}}
           >
           <View style={styles.row}>
             <Image source={{uri: item.photo}} style={styles.pic} />
@@ -57,11 +57,11 @@ export default class Contact extends Component {
                   ellipsizeMode="tail">
                   {item.name}
                 </Text>
-                {/* {item.status == 'Online' ? (
+                {item.status == 'Online' ? (
                   <Text style={styles.statusol}>{item.status}</Text>
                 ) : (
                   <Text style={styles.status}>{item.status}</Text>
-                )} */}
+                )}
               </View>
               <View style={styles.msgContainer}>
                 <Text style={styles.email}>{item.email}</Text>

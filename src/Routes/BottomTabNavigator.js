@@ -5,14 +5,12 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import HomeScreen from './Profil';
-import Chat from './Chat';
+import Maps from './Chat';
 import Contact from './Contact';
-// import Ops from '../Screens/404/ops';
-// import About from '../Screens/About/About';
-// import Bus from '../Screens/404/Bus';
+
 
 const BottomTabNavigator = createBottomTabNavigator({
-  Chat: Chat,
+  Chat: Maps,
   'Kontak': {
     screen: Contact,
   },
@@ -47,7 +45,7 @@ const BottomTabNavigator = createBottomTabNavigator({
       paddingBottom: 8, 
       paddingTop: 8,
       borderTopWidth:0, 
-      borderTopColor:'gray',
+      borderTopColor:'black',
     },
   }
 }

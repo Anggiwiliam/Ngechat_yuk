@@ -4,6 +4,8 @@ import LoadingScreen from "../screens/LoadingScreen";
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
+import Chat from "../screens/Chat/Chat";
+import Profile from "../screens/Profile/Profile";
 
 
 
@@ -11,6 +13,8 @@ import BottomTabNavigator from "./BottomTabNavigator";
 
 const AppStack = createStackNavigator({
     Home: BottomTabNavigator,
+    Chatting: Chat,
+    Profila: Profile,
     headerMode: 'none'
 },
 {
