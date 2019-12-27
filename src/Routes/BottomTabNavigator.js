@@ -5,21 +5,22 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import HomeScreen from './Profil';
-import Maps from './Chat';
+import chate from './Chat';
 import Contact from './Contact';
+import Mapss from './Maps';
 
 
 const BottomTabNavigator = createBottomTabNavigator({
-  Chat: Maps,
+  Chat: chate,
   'Kontak': {
     screen: Contact,
   },
-  Profil: {
+  Maps: {
+    screen: Mapss,
+  },
+  'Profil': {
     screen: HomeScreen,
   },
-  // 'My Account': {
-  //   screen: Chat,
-  // },
 }, {
   defaultNavigationOptions: ({ navigation }) => ({
     tabBarIcon: ({ focused, horizontal, tintColor }) => {
@@ -29,7 +30,9 @@ const BottomTabNavigator = createBottomTabNavigator({
         iconName = 'ios-chatbubbles';
       } else if (routeName === 'Kontak') {
         return <AntDesign name='addusergroup' size={32} color={focused ? '#18A4E0' : '#bababa'} />
-      }  else if (routeName === 'Profil') {
+      }  else if (routeName === 'Maps') {
+        return <MaterialCommunityIcons name='google-maps' size={40} color={focused ? '#18A4E0' : '#bababa'} />
+      }else if (routeName === 'Profil') {
         return <EvilIcons name='user' size={40} color={focused ? '#18A4E0' : '#bababa'} />
       }
       return <Icon name={iconName} size={26} color={focused ? '#18A4E0' : '#bababa'} />;

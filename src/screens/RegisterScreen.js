@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ToastAndroid } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ToastAndroid, PermissionsAndroid, Platform } from "react-native";
 import * as firebase from "firebase";
 import {Database, Auth} from '../Config/Firebase';
+import Geolocation from 'react-native-geolocation-service';
 
 export default class RegisterScreen extends React.Component {
     constructor(props) {
@@ -18,7 +19,111 @@ export default class RegisterScreen extends React.Component {
           updatesEnabled: false,
         };
     }
+
+    async componentDidMount() {
+      await this.getLocation()
+    }
+
+    hasLocationPermission = async () => {
+      if (
+        Platform.OS === 'ios' ||
+        (Platform.OS === 'android' && Platform.Version < 23)
+      ) {
+        return true;
+      }
+      const hasPermission = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+      if (hasPermission) {
+        return true;
+      }
+      const status = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+      if (status === PermissionsAndroid.RESULTS.GRANTED) {
+        return true;
+      }
+      if (status === PermissionsAndroid.RESULTS.DENIED) {
+        ToastAndroid.show(
+          'Location Permission Denied By User.',
+          ToastAndroid.LONG,
+        );
+      } else if (status === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+        ToastAndroid.show(
+          'Location Permission Revoked By User.',
+          ToastAndroid.LONG,
+        );
+      }
+      return false;
+    };  hasLocationPermission = async () => {
+      if (
+        Platform.OS === 'ios' ||
+        (Platform.OS === 'android' && Platform.Version < 23)
+      ) {
+        return true;
+      }
+      const hasPermission = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+      if (hasPermission) {
+        return true;
+      }
+      const status = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+      if (status === PermissionsAndroid.RESULTS.GRANTED) {
+        return true;
+      }
+      if (status === PermissionsAndroid.RESULTS.DENIED) {
+        ToastAndroid.show(
+          'Location Permission Denied By User.',
+          ToastAndroid.LONG,
+        );
+      } else if (status === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+        ToastAndroid.show(
+          'Location Permission Revoked By User.',
+          ToastAndroid.LONG,
+        );
+      }
+      return false;
+    };
+
+    getLocation = async () => {
+      const hasLocationPermission = await this.hasLocationPermission();
+  
+      if (!hasLocationPermission) {
+        ToastAndroid.show('permission denied', ToastAndroid.LONG)
+        return
+      }
+  
+      this.setState({loading: true}, () => {
+        Geolocation.getCurrentPosition(
+          position => {
+            console.log('Position: ', position.coords);
+            
+            this.setState({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+            console.warn(position);
+          },
+          error => {
+            this.setState({errorMessage: error, loading: false});
+            console.warn(error);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 8000,
+            maximumAge: 8000,
+            distanceFilter: 50,
+            forceRequestLocation: true,
+          },
+        );
+      });
+    };
+
     handleSignUp = () => {
+      // return console.log(this.state.latitude)
         const {email, name, password} = this.state;
         Auth.createUserWithEmailAndPassword(email, password)
         .then(response => {

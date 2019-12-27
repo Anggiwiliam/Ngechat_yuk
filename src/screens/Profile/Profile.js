@@ -67,7 +67,9 @@ export default class Profile extends React.Component {
                 </View>
                    
                   
-                  
+                  <View>
+                    <Button>edit</Button>
+                  </View>
                 </ScrollView>
                 
             </SafeAreaView> 
@@ -101,9 +103,9 @@ const styles = StyleSheet.create({
     },
     image:{
         flex: 1,
-        width: 300,
-        height:200,
-        position:'absolute'
+        width: null,
+        height:null,
+        resizeMode:'cover'
     },
     titlebar:{
         flexDirection: 'row',

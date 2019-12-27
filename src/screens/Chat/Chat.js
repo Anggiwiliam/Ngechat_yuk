@@ -13,20 +13,21 @@ import {Database} from '../../Config/Firebase';
 import AsyncStorage from '@react-native-community/async-storage';
 import {Bubble, Composer} from 'react-native-gifted-chat';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {Header} from 'native-base'
 
 export default class Chat extends Component {
-//   static navigationOptions = ({navigation}) => {
-//     return {
-//       title: this.props.navigation.getParam('item').name,
-//       headerStyle: {
-//         backgroundColor: '#f48023',
-//         height: 100,
-//       },
-//       headerTitleStyle: {
-//         color: 'white',
-//       },
-//     };
-//   };
+  // static navigationOptions = ({navigation}) => {
+  //   return {
+  //     title: this.props.navigation.getParam('item').name,
+  //     headerStyle: {
+  //       backgroundColor: '#f48023',
+  //       height: 100,
+  //     },
+  //     headerTitleStyle: {
+  //       color: 'white',
+  //     },
+  //   };
+  // };
   state = {
     message: '',
     messageList: [],
@@ -131,8 +132,11 @@ export default class Chat extends Component {
 
   render() {
     return (
+      <>
+      <Header androidStatusBarColor= '#7DC9E7' backgroundColor='#18A4E0'>
+        <Text>test</Text>
+      </Header>
       <View style={{flex: 1, backgroundColor: '#EEEBE8'}}>
-        
         <GiftedChat
           renderSend={this.renderSend}
           renderBubble={this.renderBubble}
@@ -147,6 +151,7 @@ export default class Chat extends Component {
           }}
         />
       </View>
+      </>
     );
   }
 }

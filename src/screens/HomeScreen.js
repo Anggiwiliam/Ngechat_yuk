@@ -1,10 +1,12 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity , SafeAreaView, ScrollView, Image, ToastAndroid} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity , SafeAreaView, ScrollView, Image, ToastAndroid,PermissionsAndroid} from "react-native";
 import * as firebase from "firebase";
 import Ion from 'react-native-vector-icons/Ionicons'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-community/async-storage';
 import {Database, Auth} from '../Config/Firebase';
+import RNFetchBlob from 'rn-fetch-blob';
+import ImagePicker from 'react-native-image-picker';
 
 export default class HomeScreen extends React.Component {
     state = {
@@ -34,7 +36,7 @@ export default class HomeScreen extends React.Component {
           Database.ref('user/' + userid).update({status: 'Offline'});
           await AsyncStorage.clear();
           Auth.signOut();
-          ToastAndroid.show('Logout success', ToastAndroid.LONG);
+          ToastAndroid.show('Logout success', ToastAndroid.SHORT);
           // this.props.navigation.navigate('Out');
           this.props.navigation.navigate('Landing');
         })
@@ -42,85 +44,85 @@ export default class HomeScreen extends React.Component {
     };
 
     requestCameraPermission = async () => {
-        try {
-            const granted = await PermissionsAndroid.requestMultiple([
-                PermissionsAndroid.PERMISSIONS.CAMERA,
-                PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-                PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            ])
-            return granted === PermissionsAndroid.RESULTS.GRANTED
-        } catch (err) {
-            console.log(err);
-            return false
-        }
-    }
-
+      try {
+          const granted = await PermissionsAndroid.requestMultiple([
+              PermissionsAndroid.PERMISSIONS.CAMERA,
+              PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+              PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          ])
+          return granted === PermissionsAndroid.RESULTS.GRANTED
+      } catch (err) {
+          console.log(err);
+          return false
+      }
+  }
+  
     changeImage = async type => {
-        // console.log(upp)
-        const Blob = RNFetchBlob.polyfill.Blob;
-        const fs = RNFetchBlob.fs;
-        window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
-        window.Blob = Blob;
-    
-        const options = {
-          title: 'Select Avatar',
-          storageOptions: {
-            skipBackup: true,
-            path: 'images',
-          },
-          mediaType: 'photo',
-        };
-    
-        let cameraPermission =
-          (await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA)) &&
-          PermissionsAndroid.check(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          ) &&
-          PermissionsAndroid.check(
-            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          );
-        if (!cameraPermission) {
-          cameraPermission = await this.requestCameraPermission();
-        } else {
-          ImagePicker.showImagePicker(options, response => {
-            ToastAndroid.show(
-              'Rest asure, your photo is flying to the shiny cloud',
-              ToastAndroid.LONG,
-            );
-            let uploadBob = null;
-            const imageRef = firebase
-              .storage()
-              .ref('avatar/' + this.state.userId)
-              .child('photo');
-            fs.readFile(response.path, 'base64')
-              .then(data => {
-                return Blob.build(data, {type: `${response.mime};BASE64`});
-              })
-              .then(blob => {
-                uploadBob = blob;
-                return imageRef.put(blob, {contentType: `${response.mime}`});
-              })
-              .then(() => {
-                uploadBob.close();
-                return imageRef.getDownloadURL();
-              })
-              .then(url => {
-                ToastAndroid.show(
-                  'Your cool avatar is being uploaded, its going back to your phone now',
-                  ToastAndroid.LONG,
-                );
-                firebase
-                  .database()
-                  .ref('user/' + this.state.userId)
-                  .update({photo: url});
-                this.setState({userAvatar: url});
-                AsyncStorage.setItem('user.photo', this.state.userAvatar);
-              })
-    
-              .catch(err => console.log(err));
-          });
-        }
+      // console.log(upp)
+      const Blob = RNFetchBlob.polyfill.Blob;
+      const fs = RNFetchBlob.fs;
+      window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
+      window.Blob = Blob;
+  
+      const options = {
+        title: 'Select Avatar',
+        storageOptions: {
+          skipBackup: true,
+          path: 'images',
+        },
+        mediaType: 'photo',
       };
+  
+      let cameraPermission =
+        (await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA)) &&
+        PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        ) &&
+        PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        );
+      if (!cameraPermission) {
+        cameraPermission = await this.requestCameraPermission();
+      } else {
+        ImagePicker.showImagePicker(options, response => {
+          ToastAndroid.show(
+            'Rest asure, your photo is flying to the shiny cloud',
+            ToastAndroid.SHORT,
+          );
+          let uploadBob = null;
+          const imageRef = firebase
+            .storage()
+            .ref('avatar/' + this.state.userId)
+            .child('photo');
+          fs.readFile(response.path, 'base64')
+            .then(data => {
+              return Blob.build(data, {type: `${response.mime};BASE64`});
+            })
+            .then(blob => {
+              uploadBob = blob;
+              return imageRef.put(blob, {contentType: `${response.mime}`});
+            })
+            .then(() => {
+              uploadBob.close();
+              return imageRef.getDownloadURL();
+            })
+            .then(url => {
+              ToastAndroid.show(
+                'Your cool avatar is being uploaded, its going back to your phone now',
+                ToastAndroid.SHORT,
+              );
+              firebase
+                .database()
+                .ref('user/' + this.state.userId)
+                .update({photo: url});
+              this.setState({userAvatar: url});
+              AsyncStorage.setItem('user.photo', this.state.userAvatar);
+            })
+  
+            .catch(err => console.log(err));
+        });
+      }
+    };
 
     render() {
         const {uploading} = this.state;
@@ -183,7 +185,7 @@ export default class HomeScreen extends React.Component {
                     <Text><Icon name='logout-variant' size={20}/>Logout</Text>
                 </TouchableOpacity>
                 </View>
-
+             
                 </ScrollView>
                 
             </SafeAreaView> 
@@ -216,9 +218,10 @@ const styles = StyleSheet.create({
         color: '#52575D',
     },
     image:{
+        width: null,
+        height:null,
         flex: 1,
-        width: 300,
-        height:200
+        resizeMode:'cover'
     },
     titlebar:{
         flexDirection: 'row',

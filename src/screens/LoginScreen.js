@@ -1,16 +1,31 @@
 import React from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image,ToastAndroid } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image,ToastAndroid,  Platform,
+    PermissionsAndroid, } from "react-native";
 import Icon from 'react-native-vector-icons/AntDesign'
 import * as firebase from "firebase";
 import AsyncStorage from '@react-native-community/async-storage';
 import {Database, Auth} from '../Config/Firebase';
+import Geolocation from 'react-native-geolocation-service';
 
 export default class LoginScreen extends React.Component {
-    state = {
-        email: "",
-        password: "",
-        errorMessage: null
-    };
+    constructor(props) {
+        super(props);
+        this._isMounted = false;
+        this.state = {
+          email: '',
+          password: '',
+        };
+      }
+      componentDidMount = async () => {
+        this._isMounted = true;
+        await this.getLocation();
+      };
+    
+      componentWillUnmount() {
+        this._isMounted = false;
+        Geolocation.clearWatch();
+        Geolocation.stopObserving();
+      }
 
     handleLogin = () => {
         const { email, password } = this.state;
@@ -51,6 +66,115 @@ export default class LoginScreen extends React.Component {
         });
       // Alert.alert('Error Message', this.state.errorMessage);
     
+  };
+
+  hasLocationPermission = async () => {
+    if (
+      Platform.OS === 'ios' ||
+      (Platform.OS === 'android' && Platform.Version < 23)
+    ) {
+      return true;
+    }
+    const hasPermission = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+    if (hasPermission) {
+      return true;
+    }
+    const status = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+    if (status === PermissionsAndroid.RESULTS.GRANTED) {
+      return true;
+    }
+    if (status === PermissionsAndroid.RESULTS.DENIED) {
+      ToastAndroid.show(
+        'Location Permission Denied By User.',
+        ToastAndroid.LONG,
+      );
+    } else if (status === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+      ToastAndroid.show(
+        'Location Permission Revoked By User.',
+        ToastAndroid.LONG,
+      );
+    }
+    return false;
+  };  hasLocationPermission = async () => {
+    if (
+      Platform.OS === 'ios' ||
+      (Platform.OS === 'android' && Platform.Version < 23)
+    ) {
+      return true;
+    }
+    const hasPermission = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+    if (hasPermission) {
+      return true;
+    }
+    const status = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+    if (status === PermissionsAndroid.RESULTS.GRANTED) {
+      return true;
+    }
+    if (status === PermissionsAndroid.RESULTS.DENIED) {
+      ToastAndroid.show(
+        'Location Permission Denied By User.',
+        ToastAndroid.LONG,
+      );
+    } else if (status === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+      ToastAndroid.show(
+        'Location Permission Revoked By User.',
+        ToastAndroid.LONG,
+      );
+    }
+    return false;
+  };
+
+  getLocation = async () => {
+    const hasLocationPermission = await this.hasLocationPermission();
+
+    if (!hasLocationPermission) {
+      ToastAndroid.show('permission denied', ToastAndroid.LONG)
+      return
+    }
+
+    this.setState({loading: true}, () => {
+      Geolocation.getCurrentPosition(
+        position => {
+          console.log('Position: ', position.coords);
+          
+          this.setState({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+          console.warn(position);
+        },
+        error => {
+          this.setState({errorMessage: error, loading: false});
+          console.warn(error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 8000,
+          maximumAge: 8000,
+          distanceFilter: 50,
+          forceRequestLocation: true,
+        },
+      );
+    });
+  };
+
+  _toastWithDurationGravityOffsetHandler = () => {
+    //function to make Toast With Duration, Gravity And Offset
+    ToastAndroid.showWithGravityAndOffset(
+      `Hi, Welcome '${this.state.user.name}'`,
+      ToastAndroid.LONG, //can be SHORT, LONG
+      ToastAndroid.BOTTOM, //can be TOP, BOTTON, CENTER
+      25, //xOffset
+      50, //yOffset
+    );
   };
 
     render() {

@@ -9,11 +9,19 @@ import Profile from "../screens/Profile/Profile";
 
 
 
-
-
 const AppStack = createStackNavigator({
     Home: BottomTabNavigator,
-    Chatting: Chat,
+    Chatting: {
+        screen: Chat,
+        navigationOptions: {
+            headerStyle: {
+                height: 40,
+                width: 100,
+                
+            }
+        }
+        
+    },
     Profila: Profile,
     headerMode: 'none'
 },
